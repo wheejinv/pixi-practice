@@ -2,15 +2,14 @@ const express = require("express");
 const router = require('./router');
 const app = express();
 
-app.use(express.static('public'));
-// app.use(express.static('pixi'));
+app.use('/assets', express.static('assets'));
+app.use('/src', express.static('src'));
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.engine('html', require('ejs').renderFile);
 
 router(app);
-
 
 app.get('/', (req, res) => {
     res.send('Hello world!')
