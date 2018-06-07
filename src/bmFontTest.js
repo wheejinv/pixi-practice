@@ -29,17 +29,30 @@ function setup() {
     let bmFontResult = new PIXI.extras.BitmapText("", { font: _size + "px " + bmFontResultFontName, tint: _color, align: 'center' });
     let bmFontJackpot = new PIXI.extras.BitmapText("", { font: _size + "px " + bmFontJackpotFontName, tint: _color, align: 'center' });
 
-    // bmFontResult.x = 100;
-    // bmFontResult.y = 100;
-    // bmFontResult.text = "1231231";
+    bmFontResult.x = 100;
+    bmFontResult.y = 100;
+    bmFontResult.text = "$6,000,000,000";
 
-    bmFontJackpot.x = 100;
-    bmFontJackpot.y = 100;
-    bmFontJackpot.text = "1231231";
+    // bmFontJackpot.x = 100;
+    // bmFontJackpot.y = 100;
+    // bmFontJackpot.text = "$123,456,789,123";
 
 
-    // stage.addChild( bmFontResult );
+    stage.addChild( bmFontResult );
     stage.addChild( bmFontJackpot );
+
+
+    let text = new PIXI.Text("1231231", {
+        font: "22px 'Futura'",
+        padding: 10,
+        lineHeight: 26,
+        lineWidth: 99
+    } );
+
+    window.text = text;
+
+    text.x = 0;
+    stage.addChild( text );
 }
 
 

@@ -6,18 +6,18 @@
     <page id="0" file="jackpotwheel_result.png" />
   </pages>
   <chars count="13">
-  	<char id="48" x="1" y="1" width="59" height="99" xoffset="0" yoffset="0" xadvance="50" page="0" chnl="15" />
-  	<char id="49" x="62" y="1" width="55" height="97" xoffset="0" yoffset="0" xadvance="50" page="0" chnl="15" />
+  	<char id="48" x="1" y="1" width="59" height="99" xoffset="0" yoffset="0" xadvance="53" page="0" chnl="15" />
+  	<char id="49" x="62" y="1" width="55" height="97" xoffset="0" yoffset="0" xadvance="47" page="0" chnl="15" />
   	<char id="50" x="119" y="1" width="56" height="97" xoffset="0" yoffset="0" xadvance="55" page="0" chnl="15" />
-  	<char id="51" x="177" y="1" width="57" height="99" xoffset="0" yoffset="0" xadvance="50" page="0" chnl="15" />
-  	<char id="52" x="1" y="102" width="57" height="99" xoffset="0" yoffset="0" xadvance="50" page="0" chnl="15" />
-  	<char id="53" x="60" y="102" width="57" height="99" xoffset="0" yoffset="0" xadvance="50" page="0" chnl="15" />
-  	<char id="54" x="119" y="102" width="57" height="99" xoffset="0" yoffset="0" xadvance="50" page="0" chnl="15" />
-  	<char id="55" x="178" y="102" width="57" height="99" xoffset="0" yoffset="0" xadvance="50" page="0" chnl="15" />
-  	<char id="56" x="1" y="203" width="57" height="99" xoffset="0" yoffset="0" xadvance="50" page="0" chnl="15" />
-  	<char id="57" x="60" y="203" width="57" height="99" xoffset="0" yoffset="0" xadvance="50" page="0" chnl="15" />
+  	<char id="51" x="177" y="1" width="57" height="99" xoffset="0" yoffset="0" xadvance="51" page="0" chnl="15" />
+  	<char id="52" x="1" y="102" width="57" height="99" xoffset="0" yoffset="0" xadvance="52" page="0" chnl="15" />
+  	<char id="53" x="60" y="102" width="57" height="99" xoffset="0" yoffset="0" xadvance="52" page="0" chnl="15" />
+  	<char id="54" x="119" y="102" width="57" height="99" xoffset="0" yoffset="0" xadvance="52" page="0" chnl="15" />
+  	<char id="55" x="178" y="102" width="57" height="99" xoffset="0" yoffset="0" xadvance="52" page="0" chnl="15" />
+  	<char id="56" x="1" y="203" width="57" height="99" xoffset="0" yoffset="0" xadvance="52" page="0" chnl="15" />
+  	<char id="57" x="60" y="203" width="57" height="99" xoffset="0" yoffset="0" xadvance="52" page="0" chnl="15" />
   	<char id="44" x="119" y="203" width="31" height="96" xoffset="0" yoffset="0" xadvance="25" page="0" chnl="15" />
-  	<char id="36" x="152" y="203" width="59" height="99" xoffset="0" yoffset="0" xadvance="50" page="0" chnl="15" />
+  	<char id="36" x="152" y="203" width="59" height="99" xoffset="0" yoffset="0" xadvance="56" page="0" chnl="15" />
   	<char id="ㅛㅑ" x="213" y="203" width="33" height="97" xoffset="0" yoffset="0" xadvance="25" page="0" chnl="15" />
   </chars>
 </font>
