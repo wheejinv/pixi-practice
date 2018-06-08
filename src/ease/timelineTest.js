@@ -13,38 +13,56 @@ PIXI.loader.add( _ASSET_PATH_+ "wheel_pan.png")
 let DEG_TO_RAD = Math.PI / 180;
 
 function setup() {
-    let wheel = new PIXI.Sprite( PIXI.loader.resources[ _ASSET_PATH_ + "wheel_pan.png"].texture );
-    stage.addChild( wheel );
+    let wheelObj = new PIXI.Sprite( PIXI.loader.resources[ _ASSET_PATH_ + "wheel_pan.png"].texture );
+    stage.addChild( wheelObj );
 
-    window.wheel = wheel;
+    window.wheel = wheelObj;
 
     // wheel.scale.x = 0.7;
     // wheel.scale.y = 0.7;
-    wheel.anchor.x = 0.5;
-    wheel.anchor.y = 0.5;
-    wheel.x = app.renderer.width / 2;
-    wheel.y = app.renderer.height;
+    wheelObj.anchor.x = 0.5;
+    wheelObj.anchor.y = 0.5;
+    wheelObj.x = app.renderer.width / 2;
+    wheelObj.y = app.renderer.height;
+
+    CustomEase.create( 'aaa', ".44,.08,.92,.49");
+    CustomEase.create( 'bbb', ".06,.62,.1,.94");
+
+
+    const rotationStep1 = -14.5;
+    const rotationDiff = 3;
+
+    const tarRotation = 4 * 360 + 180;
 
     let tl = new TimelineMax();
-    let tween1 = TweenMax.to(wheel, 10, {
+
+    let start = new TweenMax.to(wheelObj, 1.5, {
         pixi: {
-            rotation: 360,
-        },
-        startAt: {
-            rotation: 0
+            rotation: ( wheelObj.rotation % 360 ) + rotationStep1
+        }
+
+    });
+
+    tl.add( start );
+
+    let ing2 = TweenMax.to(wheelObj, 22, {
+        ease: CustomEase.create("custom", "M0,0 C0.128,0.092 0.225,0.159 0.292,0.292 0.346,0.4 0.384,0.716 0.468,0.808 0.558,0.906 0.722,0.98 1,1"),
+        pixi: {
+            rotation: tarRotation - rotationDiff
         }
     });
 
-    tl.add( tween1 );
+    tl.add( ing2 );
 
-    for( let i = 0; i < 10; i++ ) {
-        tl.addCallback( ()=> {
-            console.warn( i + 1 );
-        }, '' + ( i + 1))
-    }
+    let end = new TweenMax(wheelObj, 1.2, {
+        ease: CustomEase.create("custom", "M0,0 C0,0 0.224,0.7 0.4,0.7 0.59,0.7 0.48,0.3 0.6,0.3 0.625,0.3 0.676,0.57 0.75,0.57 0.828,0.57 0.81,0.442 0.898,0.442 0.993,0.442 1,0.512 1,0.5"),
+        pixi: {
+            rotation: tarRotation + rotationDiff
+        }
+    });
 
+    tl.add( end );
 
-    tl.totalDuration( 50 );
 
 
 }
