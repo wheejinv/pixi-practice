@@ -36,14 +36,6 @@ function setup() {
 
     let tl = new TimelineMax();
 
-    let start = new TweenMax.to(wheelObj, 1.5, {
-        pixi: {
-            rotation: ( wheelObj.rotation % 360 ) + rotationStep1
-        }
-
-    });
-
-    tl.add( start );
 
     let ing2 = TweenMax.to(wheelObj, 22, {
         ease: CustomEase.create("custom", "M0,0 C0.128,0.092 0.225,0.159 0.292,0.292 0.346,0.4 0.384,0.716 0.468,0.808 0.558,0.906 0.722,0.98 1,1"),
@@ -54,17 +46,24 @@ function setup() {
 
     tl.add( ing2 );
 
-    let end = new TweenMax(wheelObj, 1.2, {
-        ease: CustomEase.create("custom", "M0,0 C0,0 0.224,0.7 0.4,0.7 0.59,0.7 0.48,0.3 0.6,0.3 0.625,0.3 0.676,0.57 0.75,0.57 0.828,0.57 0.81,0.442 0.898,0.442 0.993,0.442 1,0.512 1,0.5"),
+
+    tl.add( TweenMax.to( wheelObj, 5, {
         pixi: {
-            rotation: tarRotation + rotationDiff
+            x: 100
         }
-    });
+    }), '3' );
 
-    tl.add( end );
+    tl.addLabel( 'what', '5');
 
+    let timeWhat = tl.getLabelTime( 'what' );
 
+    console.warn( 'timeWhat : ', timeWhat );
 
+    tl.add( TweenMax.to( wheelObj, 5, {
+        pixi: {
+            x: app.renderer.width / 2
+        }
+    }), parseInt( timeWhat) + 5 );
 }
 
 

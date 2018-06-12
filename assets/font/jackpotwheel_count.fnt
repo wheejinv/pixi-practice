@@ -17,7 +17,7 @@
   	<char id="56" x="1" y="203" width="57" height="99" xoffset="0" yoffset="0" xadvance="52" page="0" chnl="15" />
   	<char id="57" x="60" y="203" width="57" height="99" xoffset="0" yoffset="0" xadvance="52" page="0" chnl="15" />
   	<char id="44" x="119" y="203" width="31" height="96" xoffset="0" yoffset="0" xadvance="25" page="0" chnl="15" />
-  	<char id="36" x="152" y="203" width="59" height="99" xoffset="0" yoffset="0" xadvance="56" page="0" chnl="15" />
+  	<char id="36" x="152" y="203" width="59" height="99" xoffset="30" yoffset="0" xadvance="56" page="0" chnl="15" />
   	<char id="ㅛㅑ" x="213" y="203" width="33" height="97" xoffset="0" yoffset="0" xadvance="25" page="0" chnl="15" />
   </chars>
 </font>

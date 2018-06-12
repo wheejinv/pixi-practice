@@ -14,7 +14,7 @@ window.stage = stage;
 
 PIXI.loader.add( _ASSET_PATH_+ "/font/jackpotwheel_count.fnt");
 PIXI.loader.add( _ASSET_PATH_+ "/font/jackpotwheel_result.fnt");
-// PIXI.loader.add( _ASSET_PATH_+ "/font/jackpotwheel_result.png");
+PIXI.loader.add( _ASSET_PATH_+ "/font/slot_jackpot_popup_amount.fnt");
 
 PIXI.loader.load(setup);
 
@@ -23,23 +23,31 @@ function setup() {
     let _color = 0xffffff;
     let bmFontResultFontName = 'jackpotwheel_result';
     let bmFontJackpotFontName = 'jackpotwheel_count';
+    let bmJackpotPopupFontName = 'slot_jackpot_popup_amount';
 
     let _size = 30;
 
     let bmFontResult = new PIXI.extras.BitmapText("", { font: _size + "px " + bmFontResultFontName, tint: _color, align: 'center' });
     let bmFontJackpot = new PIXI.extras.BitmapText("", { font: _size + "px " + bmFontJackpotFontName, tint: _color, align: 'center' });
+    let bmJackpotPopupFont = new PIXI.extras.BitmapText("", { font: 125 + "px " + bmJackpotPopupFontName, tint: _color, align: 'center' });
 
     bmFontResult.x = 100;
     bmFontResult.y = 100;
-    bmFontResult.text = "$6,000,000,000";
+    bmFontResult.text = "$16,200,000,000";
 
-    // bmFontJackpot.x = 100;
-    // bmFontJackpot.y = 100;
-    // bmFontJackpot.text = "$123,456,789,123";
+    window.ss = bmFontResult;
 
+    bmFontJackpot.x = 100;
+    bmFontJackpot.y = 0;
+    bmFontJackpot.text = "$123,426,789,123";
+
+    bmJackpotPopupFont.x = 100;
+    bmJackpotPopupFont.y = 300;
+    bmJackpotPopupFont.text = "$123,426,789,123";
 
     stage.addChild( bmFontResult );
     stage.addChild( bmFontJackpot );
+    stage.addChild( bmJackpotPopupFont );
 
 
     let text = new PIXI.Text("1231231", {
