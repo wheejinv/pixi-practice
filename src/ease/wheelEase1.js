@@ -1,7 +1,3 @@
-import d from '/src/Example.js';
-
-console.warn( "d : ", d );
-
 var app = new PIXI.Application(1000, 500, {
     backgroundColor: 0x000000
 });
