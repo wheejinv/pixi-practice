@@ -16,7 +16,12 @@ window.app = app;
 window.stage = stage;
 
 PIXI.loader.add( _ASSET_PATH_+ "wheel_pan.png")
-    .load(setup);
+    .load( ()=> {
+        // PIXI.loader.reset();
+        console.warn("loader reset");
+
+        setup();
+    });
 
 let DEG_TO_RAD = Math.PI / 180;
 
