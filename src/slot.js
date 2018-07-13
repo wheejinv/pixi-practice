@@ -1,20 +1,32 @@
 class Reel extends PIXI.Sprite {
-    constructor( constObj ) {
+    constructor( reelIndex, parSheet ) {
         super();
 
-        this.CONST = constObj;
+        this._reelIndex = reelIndex;
+        this.parSheet = parSheet;
 
-        let symbol, symbolCount = this.CONST.symbolCount;
+        this.reelInfo = this.parSheet['reel' + this._reelIndex ];
+
+        if( !this.reelInfo ) {
+            console.warn( "reelInfo invalid");
+
+        }
+
+        this._symbolCount = this.reelInfo.length;
+
+        let symbolCount = this.reelInfo.length;
+        let symbol;
 
         let centerIdxY = Math.ceil( symbolCount / 2 );
         centerIdxY = centerIdxY % 2 ? centerIdxY - 1 : centerIdxY;
 
         this.arrSymbol = [];
-        for( let i = 0; i< symbolCount; i++ ) {
-            if( Math.random() < 0.3 ) {
+        for( let i = 0; i< this.reelInfo.length; i++ ) {
+
+            if( this.reelInfo[i] === this.parSheet.EmptySymbolID ) {
                 symbol = new PIXI.Sprite();
             } else {
-                symbol = PIXI.Sprite.fromImage( "symbol" + ( 1 + i % 3 ) );
+                symbol = PIXI.Sprite.fromImage("symbol" + this.reelInfo[i]);
             }
 
             this.addChild(  symbol );
@@ -22,12 +34,12 @@ class Reel extends PIXI.Sprite {
             symbol.anchor.y = 0.5;
             symbol._info = {};
             symbol._info.oriIndex = i;
-            symbol.x = this.CONST.symbolWidth / 2;
-            symbol.y = this.CONST.symbolHeight * ( i - centerIdxY ) + this.CONST.symbolHeight / 2;
+            symbol.x = this.parSheet.symbolWidth / 2;
+            symbol.y = this.parSheet.symbolHeight * ( i - centerIdxY ) + this.parSheet.symbolHeight / 2;
             this.arrSymbol.push( symbol );
         }
 
-        this.REEL_HEIGHT = this.CONST.symbolHeight * symbolCount;
+        this.REEL_HEIGHT = this.parSheet.symbolHeight * symbolCount;
         this.SPIN_COUNT = 1;
 
         this._viewDown = 300;
@@ -52,12 +64,13 @@ class Reel extends PIXI.Sprite {
     }
 
     _playReel(stopDuration = 1, stopIndex) {
-        if (0 > stopIndex || this.CONST.symbolCount - 1 < stopIndex) {
+        if (0 > stopIndex || this._symbolCount - 1 < stopIndex) {
             console.warn("stop index error");
             return;
         }
 
         let moveDistanceY = this._getMoveDistance(stopIndex);
+        this._curIndex = stopIndex;
 
         TweenMax.from( this._blurFilterY, stopDuration - 0.1, {
             blur: 7
@@ -82,21 +95,20 @@ class Reel extends PIXI.Sprite {
     }
 
     _getMoveDistance( targetIndex ) {
-        return ( this.CONST.symbolCount - targetIndex + this._curIndex ) * this.CONST.symbolHeight;
+        return ( this._symbolCount - targetIndex + this._curIndex ) * this.parSheet.symbolHeight;
     }
 }
 
 class MiniSlot extends PIXI.Container {
-    constructor( reelCount = 5) {
+    constructor( parSheet ) {
         super();
 
-        this.CONST = {
-            reelCount: reelCount,
-            reelSpaceX: 39,
-            symbolCount : 10,
-            symbolHeight: 30,
-            symbolWidth: 36
-        };
+        this.parSheet = parSheet;
+
+        this.arrReelInfo = [];
+        for( let i =0; i < this.parSheet.reelCount; i++ ) {
+            this.arrReelInfo.push( this.parSheet["reel" + i]);
+        }
 
         this.reelContainer = new PIXI.Container();
         this.addChild( this.reelContainer );
@@ -117,7 +129,7 @@ class MiniSlot extends PIXI.Container {
 
         let mask = new PIXI.Graphics();
         mask.beginFill();
-        mask.drawRect(this.x ,this.y + yDiff / 2, this.CONST.reelSpaceX * ( this.CONST.reelCount - 1 ) + this.CONST.symbolWidth, this.CONST.symbolHeight - yDiff);
+        mask.drawRect(this.x ,this.y + yDiff / 2, this.parSheet.reelSpaceX * ( this.parSheet.reelCount - 1 ) + this.parSheet.symbolWidth, this.parSheet.symbolHeight - yDiff);
         mask.endFill();
         mask.color = 0x000000;
         mask.alpha = 0.6;
@@ -135,17 +147,57 @@ class MiniSlot extends PIXI.Container {
     }
 
     initReels() {
-        for( let i = 0; i< this.CONST.reelCount; i++ ) {
-            this.reels.push( new Reel( this.CONST ) );
-            this.reels[ i ].x = this.CONST.reelSpaceX * i;
+        for( let i = 0; i< this.parSheet.reelCount; i++ ) {
+            this.reels.push( new Reel( i, this.parSheet ) );
+            this.reels[ i ].x = this.parSheet.reelSpaceX * i;
             this.reelContainer.addChild( this.reels[ i ] );
         }
     }
 
-    playReel() {
-        for( let i = 0; i< this.reels.length; i++ ) {
-            this.reels[ i ]._playReel( 1 + i * 0.1, Math.floor( 10 * Math.random() ) );
+    playReel( isJackpot ) {
+
+        isJackpot = isJackpot === true;
+
+        let arrResult = this._getRandomResult();
+        let isValid = this.checkIsJackpot( arrResult );
+
+        while( isValid !== isJackpot ) {
+            arrResult = this._getRandomResult();
+            isValid = this.checkIsJackpot( arrResult );
         }
+
+        for( let i = 0; i< this.reels.length; i++ ) {
+            this.reels[ i ]._playReel( 1 + i * 0.1, arrResult[ i ] );
+        }
+    }
+
+    _getRandomResult() {
+        let arr = [];
+
+        let reelInfo;
+        for( let i = 0; i < this.parSheet.reelCount; i++ ) {
+            reelInfo = this.parSheet['reel' + i ];
+            arr.push( reelInfo[ Math.floor( Math.random() * reelInfo.length ) ] );
+        }
+
+        return arr;
+    }
+
+    checkIsJackpot( arrResult ) {
+        let emptyCount = 0;
+
+        let symbolID = 0;
+        let reelInfo;
+        for( let i=0; i< this.arrReelInfo.length; i++ ) {
+            reelInfo = this.arrReelInfo[ i ];
+            symbolID = reelInfo[ arrResult[ i ] ];
+
+            if( symbolID === this.parSheet.EmptySymbolID ) {
+                emptyCount++;
+            }
+        }
+
+        return emptyCount === 0;
     }
 }
 
@@ -175,15 +227,37 @@ class Main {
     }
 
     init() {
-        this.slot = new MiniSlot();
+        this._getParSheet();
+
+        this.slot = new MiniSlot( this._getParSheet() );
         this.stage.addChild( this.slot );
 
         this.slot.x = 50;
         this.slot.y = 300;
     }
 
-    play() {
-        this.slot.playReel();
+    _getParSheet() {
+        let empty = 0;
+        let normal7 = 1;
+        let blue7 = 2;
+        let white7 = 3;
+
+        return {
+            reelSpaceX  : 39,
+            symbolHeight: 30,
+            symbolWidth : 36,
+            reelCount: 5,
+            EmptySymbolID: 0,
+            reel0 : [ normal7, empty, blue7, empty, white7, empty, white7, empty, normal7, empty ],
+            reel1 : [ normal7, empty, blue7, empty, blue7, empty, white7, empty, normal7, empty ],
+            reel2 : [ white7, empty, blue7, empty, white7, empty, white7, empty, normal7, empty ],
+            reel3 : [ empty, blue7, empty, white7, empty, white7, empty, normal7, empty, normal7 ],
+            reel4 : [ blue7, empty, blue7, empty, white7, empty, white7, empty, normal7, empty ]
+        }
+    }
+
+    play( isJackpot ) {
+        this.slot.playReel( isJackpot );
     }
 }
 
