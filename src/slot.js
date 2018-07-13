@@ -17,74 +17,54 @@ class Reel extends PIXI.Sprite {
             symbol.anchor.y = 0.5;
             symbol._info = {};
             symbol._info.oriIndex = i;
-            symbol.x = this.CONST.symbolWidth / 2;    //
-            symbol.y = this.CONST.symbolHeight * ( i - centerIdxY ) + this.CONST.symbolHeight / 2
+            symbol.x = this.CONST.symbolWidth / 2;
+            symbol.y = this.CONST.symbolHeight * ( i - centerIdxY ) + this.CONST.symbolHeight / 2;
             this.arrSymbol.push( symbol );
         }
 
         this.REEL_HEIGHT = this.CONST.symbolHeight * symbolCount;
         this.SPIN_COUNT = 3;
 
-        this._viewUp = -250;
         this._viewDown = 300;
         this._curIndex = centerIdxY;
-        this._upIndex = 0;
-        this._downIndex = 0;
 
         this.init();
     }
 
     init() {
-        // this._setSymbolVisible();
-
 
     }
 
-    _changeSymPosition() {
-        let sym, i;
-
-        for (i = 0; i < this.arrSymbol.length; i++) {
-            sym = this.arrSymbol[i];
-            if ( ( this._viewUp + this.y ) > sym.y ) {
-                // sym.visible = false;
-            } else if (this._viewDown + this.y < sym.y) {
-                sym.y -= this.REEL_HEIGHT;
-                // sym.visible = false;
+    _setSymbolPositionInPlay() {
+        for ( let i = 0; i < this.arrSymbol.length; i++) {
+            if( ( this.arrSymbol[ i ].y + this.y )  > this._viewDown ) {
+                this.arrSymbol[ i ].y -= this.REEL_HEIGHT;
             }
         }
-
-        // 오름차순
-        let arrVisibleSymbol = this.arrSymbol.filter(obj => obj.visible).sort((a, b) => a - b);
-
-        if( arrVisibleSymbol.length === 0 ) return;
-
-        this._upIndex = arrVisibleSymbol[0]._info.oriIndex;
-        this._downIndex = arrVisibleSymbol[arrVisibleSymbol.length - 1]._info.oriIndex;
-
-        console.warn( "this._upIndex : ", this._upIndex, "this._downIndex : ", this._downIndex );
     }
 
-    _playReel( stopDuration = 1, stopIndex ) {
-
-        if( 0 > stopIndex || this.CONST.symbolCount - 1 < stopIndex ) {
-            console.warn( "stop index error");
+    _playReel(stopDuration = 1, stopIndex) {
+        if (0 > stopIndex || this.CONST.symbolCount - 1 < stopIndex) {
+            console.warn("stop index error");
             return;
         }
 
-        let moveDistanceY = this._getMoveDistance( stopIndex );
+        let moveDistanceY = this._getMoveDistance(stopIndex);
 
-        TweenMax.to( this, stopDuration, {
-            y: this.y + ( this.REEL_HEIGHT * this.SPIN_COUNT + moveDistanceY ),
-            onUpdate: () => {
-                for ( let i = 0; i < this.arrSymbol.length; i++) {
-                    if( this._viewDown + this.y > this.arrSymbol[ i ].y) {
-                        this.arrSymbol[ i ].y -= this.REEL_HEIGHT;
-
+        TweenMax.to(this, stopDuration, {
+            y         : this.y + (this.REEL_HEIGHT * this.SPIN_COUNT + moveDistanceY),
+            ease      : Power1.easeOut,
+            onUpdate  : () => {
+                this._setSymbolPositionInPlay();
+            },
+            onComplete: () => {
+                this.y %= this.REEL_HEIGHT;
+                for (let i = 0; i < this.arrSymbol.length; i++) {
+                    this.arrSymbol[i].y %= this.REEL_HEIGHT;
+                    if (this.y === 0) {
+                        this.arrSymbol[i].y += this.REEL_HEIGHT;
                     }
                 }
-            },
-            onComplete: ()=> {
-                this.y %= this.REEL_HEIGHT;
             }
         })
     }
@@ -103,16 +83,18 @@ class MiniSlot extends PIXI.Container {
             reelSpaceX: 150,
             symbolCount : 10,
             symbolHeight: 200,
-            symbolWidth: 120
+            symbolWidth: 160
         };
 
         let mask = new PIXI.Graphics();
         mask.beginFill();
-        mask.drawRect(this.x ,this.y, this.CONST.reelSpaceX * reelCount, this.CONST.symbolHeight );
+        mask.drawRect(this.x ,this.y, this.CONST.reelSpaceX * ( this.CONST.reelCount - 1 ) + this.CONST.symbolWidth, this.CONST.symbolHeight );
         mask.endFill();
         mask.color = 0x000000;
         mask.alpha = 0.6;
         this.addChild( mask );
+
+        this.mask = mask;
 
         this.reelContainer = new PIXI.Container();
         this.addChild( this.reelContainer );
