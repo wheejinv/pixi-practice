@@ -11,7 +11,12 @@ class Reel extends PIXI.Sprite {
 
         this.arrSymbol = [];
         for( let i = 0; i< symbolCount; i++ ) {
-            symbol = PIXI.Sprite.fromImage( "symbol" + ( 1 + i % 4 ) );
+            if( Math.random() < 0.3 ) {
+                symbol = new PIXI.Sprite();
+            } else {
+                symbol = PIXI.Sprite.fromImage( "symbol" + ( 1 + i % 3 ) );
+            }
+
             this.addChild(  symbol );
             symbol.anchor.x = 0.5;
             symbol.anchor.y = 0.5;
@@ -23,7 +28,7 @@ class Reel extends PIXI.Sprite {
         }
 
         this.REEL_HEIGHT = this.CONST.symbolHeight * symbolCount;
-        this.SPIN_COUNT = 3;
+        this.SPIN_COUNT = 1;
 
         this._viewDown = 300;
         this._curIndex = centerIdxY;
@@ -32,7 +37,10 @@ class Reel extends PIXI.Sprite {
     }
 
     init() {
+        this._blurFilterY = new PIXI.filters.BlurYFilter();
+        this.filters = [ this._blurFilterY ];
 
+        this._blurFilterY.blur = 0;
     }
 
     _setSymbolPositionInPlay() {
@@ -51,9 +59,13 @@ class Reel extends PIXI.Sprite {
 
         let moveDistanceY = this._getMoveDistance(stopIndex);
 
+        TweenMax.from( this._blurFilterY, stopDuration - 0.1, {
+            blur: 7
+        });
+
         TweenMax.to(this, stopDuration, {
             y         : this.y + (this.REEL_HEIGHT * this.SPIN_COUNT + moveDistanceY),
-            ease      : Power1.easeOut,
+            // ease      : Power1.easeOut,
             onUpdate  : () => {
                 this._setSymbolPositionInPlay();
             },
@@ -80,31 +92,49 @@ class MiniSlot extends PIXI.Container {
 
         this.CONST = {
             reelCount: reelCount,
-            reelSpaceX: 150,
+            reelSpaceX: 39,
             symbolCount : 10,
-            symbolHeight: 200,
-            symbolWidth: 160
+            symbolHeight: 30,
+            symbolWidth: 36
         };
-
-        let mask = new PIXI.Graphics();
-        mask.beginFill();
-        mask.drawRect(this.x ,this.y, this.CONST.reelSpaceX * ( this.CONST.reelCount - 1 ) + this.CONST.symbolWidth, this.CONST.symbolHeight );
-        mask.endFill();
-        mask.color = 0x000000;
-        mask.alpha = 0.6;
-        this.addChild( mask );
-
-        this.mask = mask;
 
         this.reelContainer = new PIXI.Container();
         this.addChild( this.reelContainer );
 
         this.reels = [];
 
-        this.setReels();
+        this.init();
     }
 
-    setReels() {
+    init() {
+        this.initBack();
+        this.initMask();
+        this.initReels();
+    }
+
+    initMask() {
+        let yDiff = 4;
+
+        let mask = new PIXI.Graphics();
+        mask.beginFill();
+        mask.drawRect(this.x ,this.y + yDiff / 2, this.CONST.reelSpaceX * ( this.CONST.reelCount - 1 ) + this.CONST.symbolWidth, this.CONST.symbolHeight - yDiff);
+        mask.endFill();
+        mask.color = 0x000000;
+        mask.alpha = 0.6;
+
+        this.reelContainer.addChild( mask );
+
+        this.reelContainer.mask = mask;
+    }
+
+    initBack() {
+        let back = PIXI.Sprite.fromImage( "back" );
+        back.x -= 12;
+        back.y -= 2;
+        this.addChildAt( back, 0 );
+    }
+
+    initReels() {
         for( let i = 0; i< this.CONST.reelCount; i++ ) {
             this.reels.push( new Reel( this.CONST ) );
             this.reels[ i ].x = this.CONST.reelSpaceX * i;
@@ -114,7 +144,7 @@ class MiniSlot extends PIXI.Container {
 
     playReel() {
         for( let i = 0; i< this.reels.length; i++ ) {
-            this.reels[ i ]._playReel( 3 + i * 0.3, Math.floor( 10 * Math.random() ) );
+            this.reels[ i ]._playReel( 1 + i * 0.1, Math.floor( 10 * Math.random() ) );
         }
     }
 }
@@ -134,10 +164,10 @@ class Main {
     loadResource() {
         let loader = PIXI.loader;
 
-        loader.add( "symbol1", _ASSET_PATH_ + "1111.png" );
-        loader.add( "symbol2", _ASSET_PATH_ + "2222.png" );
-        loader.add( "symbol3", _ASSET_PATH_ + "3333.png" );
-        loader.add( "symbol4", _ASSET_PATH_ + "4444.png" );
+        loader.add( "symbol1", _ASSET_PATH_ + "icon_7.png" );
+        loader.add( "symbol2", _ASSET_PATH_ + "icon_7_blue.png" );
+        loader.add( "symbol3", _ASSET_PATH_ + "icon_7_white.png" );
+        loader.add( "back", _ASSET_PATH_ + "ril_back.png" );
 
         loader.load( () => {
             this.init();
@@ -155,7 +185,6 @@ class Main {
     play() {
         this.slot.playReel();
     }
-
 }
 
 
