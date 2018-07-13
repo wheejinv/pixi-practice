@@ -82,8 +82,6 @@ class Reel extends PIXI.Sprite {
 
                     }
                 }
-
-
             },
             onComplete: ()=> {
                 this.y %= this.REEL_HEIGHT;
