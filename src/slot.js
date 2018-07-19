@@ -30,14 +30,15 @@ class CJackpotMiniSlot extends PIXI.Container {
 
         let mask = new PIXI.Graphics();
         mask.beginFill();
-        mask.drawRect(this.x ,this.y + yDiff / 2, this.parSheet.reelSpaceX * ( this.parSheet.reelCount - 1 ) + this.parSheet.symbolWidth, this.parSheet.symbolHeight - yDiff);
+        mask.drawRect(this.x ,this.y + yDiff / 2, this.parSheet.reelSpaceX * ( this.parSheet.reelCount - 1 ) + this.parSheet.symbolWidth, this.parSheet.originSymbolHeight - yDiff);
+        // mask.drawRect(this.x ,this.y + yDiff / 2, this.parSheet.reelSpaceX * ( this.parSheet.reelCount - 1 ) + this.parSheet.symbolWidth, this.parSheet.symbolHeight - yDiff);
         mask.endFill();
         mask.color = 0x000000;
         mask.alpha = 0.6;
 
         this.reelContainer.addChild( mask );
 
-        this.reelContainer.mask = mask;
+        // this.reelContainer.mask = mask;
     }
 
     initBack() {
@@ -49,9 +50,11 @@ class CJackpotMiniSlot extends PIXI.Container {
 
     initReels() {
         for( let i = 0; i< this.parSheet.reelCount; i++ ) {
-            this.reels.push( new MiniReel( i, this.parSheet ) );
-            this.reels[ i ].x = this.parSheet.reelSpaceX * i;
-            this.reelContainer.addChild( this.reels[ i ] );
+            let miniReel = new MiniReel( i, this.parSheet );
+            miniReel.x = this.parSheet.reelSpaceX * i;
+            this.reelContainer.addChild( miniReel );
+
+            this.reels.push( miniReel );
         }
     }
 
@@ -70,7 +73,7 @@ class CJackpotMiniSlot extends PIXI.Container {
         })
     }
 
-    playReel( isJackpot, isMega, spinDuration = 1, stopDuration = 0.1) {
+    playReel( isJackpot, isMega, spinDuration = 0.4, stopDuration = 0.02, spinCount = 1, bounceDuration=0.05, bounceMultiplier=0.2 ) {
 
         if( this._isEnabled === false ) {
             return;
@@ -78,89 +81,88 @@ class CJackpotMiniSlot extends PIXI.Container {
 
         isJackpot = isJackpot === true;
 
-        let arrResult = this._getRandomResult();
-        let isValid = isMega ? this.checkIsMegaJackpot( arrResult ) : this.checkIsSuperJackpot( arrResult );
+        let arrResult;
 
-        while( isValid !== isJackpot ) {
+        if ( isJackpot && isMega ) {
+            arrResult = this._getMegaJackpotResult();
+        } else if ( isJackpot && isMega == false) {
+            arrResult = this._getSuperJackpotResult();
+        } else {
             arrResult = this._getRandomResult();
-            isValid = isMega ? this.checkIsMegaJackpot( arrResult ) : this.checkIsSuperJackpot( arrResult );
         }
 
         for( let i = 0; i< this.reels.length; i++ ) {
-            this.reels[ i ]._playReel( spinDuration + i * stopDuration, arrResult[ i ] );
+            this.reels[ i ]._playReel( spinDuration + i * stopDuration, arrResult[ i ], spinCount, bounceDuration, bounceMultiplier );
         }
     }
 
-    _getRandomResult() {
+    _getMegaJackpotResult() {
         let arr = [];
 
         let reelInfo;
         for( let i = 0; i < this.parSheet.reelCount; i++ ) {
             reelInfo = this.parSheet['reel' + i ];
-            arr.push( reelInfo[ Math.floor( Math.random() * reelInfo.length ) ] );
+            arr.push( 0 );
+        }
+        return arr;
+    }
+
+    _getSuperJackpotResult() {
+        let arr = [];
+
+        let reelInfo;
+        for( let i = 0; i < this.parSheet.reelCount; i++ ) {
+            reelInfo = this.parSheet['reel' + i ];
+            if ( i == 4)
+            {
+                arr.push( 1 );
+            } else {
+                arr.push( 0 );
+            }
+        }
+        return arr;
+    }
+
+    _getRandomResult() {
+        let arr = [];
+
+        let red7Count = 0;
+        let reelInfo;
+        let index = 0;
+        for( let i = 0; i < this.parSheet.reelCount; i++ ) {
+            reelInfo = this.parSheet['reel' + i ];
+            index = Math.floor( Math.random() * 4 );
+            if ( red7Count >= 3) {
+                index = 1;
+            }
+            arr.push( index );
+            if ( index  == 0 ) {
+                red7Count++;
+            }
         }
 
         return arr;
     }
 
-    checkIsMegaJackpot(arrResult ) {
-        let jackpotCount = 0;
-
-        let symbolID = 0;
-        let reelInfo;
-        for( let i=0; i< this.arrReelInfo.length; i++ ) {
-            reelInfo = this.arrReelInfo[ i ];
-            symbolID = reelInfo[ arrResult[ i ] ];
-
-            if( symbolID === this.parSheet.JackpotSymbolID ) {
-                jackpotCount++;
-            } else {
-                break;
-            }
-        }
-
-        return jackpotCount > 4;
-    }
-
-    checkIsSuperJackpot(arrResult ) {
-        let jackpotCount = 0;
-
-        let symbolID = 0;
-        let reelInfo;
-        for( let i=0; i< this.arrReelInfo.length; i++ ) {
-            reelInfo = this.arrReelInfo[ i ];
-            symbolID = reelInfo[ arrResult[ i ] ];
-
-            if( symbolID === this.parSheet.JackpotSymbolID ) {
-                jackpotCount++;
-            } else {
-                break;
-            }
-        }
-
-        let lastReelInfo = this.arrReelInfo[4];
-
-        return jackpotCount === 4 && lastReelInfo[arrResult[4]] !== this.parSheet.JackpotSymbolID;
-    }
-
     static getParSheet() {
         let empty = 0;
-        let real7 = 1;
+        let red7 = 1;
         let blue7 = 2;
         let white7 = 3;
 
         return {
             reelSpaceX  : 39,
-            symbolHeight: 30,
+            originSymbolHeight:30,
+            symbolHeight: 20,
             symbolWidth : 36,
             reelCount: 5,
             EmptySymbolID: 0,
             JackpotSymbolID: 1,
-            reel0 : [ real7, empty, blue7, empty, real7, empty, white7, empty, real7, empty ],
-            reel1 : [ real7, empty, real7, empty, blue7, empty, white7, empty, real7, empty ],
-            reel2 : [ real7, empty, blue7, empty, white7, empty, white7, empty, real7, empty ],
-            reel3 : [ empty, blue7, empty, real7, empty, white7, empty, real7, empty, real7 ],
-            reel4 : [ blue7, empty, real7, empty, white7, empty, white7, empty, real7, empty ]
+            reel0 : [ red7, empty, blue7, empty, red7, empty, blue7, empty],
+            reel1 : [ red7, empty, white7, empty, red7, empty, white7, empty],
+            reel2 : [ red7, empty, blue7, empty, red7, empty, blue7, empty],
+            reel3 : [ red7, empty, white7, empty, red7, empty, white7, empty],
+            reel4 : [ red7, empty, blue7, empty, red7, empty, blue7, empty]
         }
     }
 }
@@ -205,7 +207,7 @@ class MiniReel extends PIXI.Sprite {
             symbol._info = {};
             symbol._info.oriIndex = i;
             symbol.x = this.parSheet.symbolWidth / 2;
-            symbol.y = this.parSheet.symbolHeight * ( i - centerIdxY ) + this.parSheet.symbolHeight / 2 - 2;
+            symbol.y = this.parSheet.symbolHeight * ( i - centerIdxY ) + this.parSheet.symbolHeight / 2 - 2 + 5;
             this.arrSymbol.push( symbol );
         }
 
@@ -215,23 +217,12 @@ class MiniReel extends PIXI.Sprite {
         this._viewDown = 150;
         this._curIndex = centerIdxY;
 
-        this._blurFilterY = new PIXI.filters.BlurYFilter();
-        this.filters = [ this._blurFilterY ];
-
-        this._blurFilterY.blur = 0;
-
-        this._tweenBlur = null;
         this._tweenSpin = null;
     }
 
     destroy( option ) {
 
         this.arrSymbol = [];
-
-        if( this._tweenBlur ) {
-            this._tweenBlur.kill();
-            this._tweenBlur = null
-        }
 
         if( this._tweenSpin ) {
             this._tweenSpin.kill();
@@ -242,52 +233,66 @@ class MiniReel extends PIXI.Sprite {
     }
 
     _setSymbolPositionInPlay() {
-        for ( let i = 0; i < this.arrSymbol.length; i++) {
-            if( ( this.arrSymbol[ i ].y + this.y )  > this._viewDown ) {
-                this.arrSymbol[ i ].y -= this.REEL_HEIGHT;
+        let len = this.arrSymbol.length;
+        for ( let i = 0; i < len; i++) {
+            let symbol = this.arrSymbol[ i ];
+            if( ( symbol.y + this.y )  > this._viewDown ) {
+                symbol.y -= this.REEL_HEIGHT;
             }
         }
     }
 
-    _playReel(stopDuration = 1, stopIndex) {
+    _playReel(spinDuration = 1, stopIndex, spinCount, bounceDuration, bounceMultiplier) {
         if (0 > stopIndex || this._symbolCount - 1 < stopIndex) {
             console.warn("stop index error");
             return;
         }
 
+        this.bounceDuration = bounceDuration;
+        this.bounceMultiplier = bounceMultiplier;
+
         let moveDistanceY = this._getMoveDistance(stopIndex);
         this._curIndex = stopIndex;
-
-        if( this._tweenBlur ) {
-            this._tweenBlur.kill();
-            this._tweenBlur = null
-        }
 
         if( this._tweenSpin ) {
             this._tweenSpin.kill();
             this._tweenSpin = null;
         }
 
-        this._tweenBlur = TweenMax.from( this._blurFilterY, stopDuration - 0.1, {
-            blur: 7
-        });
+        this.spinDuration =  spinDuration;
+        this.distance = this.REEL_HEIGHT*spinCount + moveDistanceY;
 
-        this._tweenSpin = TweenMax.to(this, stopDuration, {
-            y         : this.y + (this.REEL_HEIGHT * this.SPIN_COUNT + moveDistanceY),
-            // ease      : Power1.easeOut,
+        this._tweenSpin = TweenMax.to(this, spinDuration, {
+            y         : this.y + this.distance,
             onUpdate  : () => {
                 this._setSymbolPositionInPlay();
             },
             onComplete: () => {
-                this.y %= this.REEL_HEIGHT;
-                for (let i = 0; i < this.arrSymbol.length; i++) {
-                    this.arrSymbol[i].y %= this.REEL_HEIGHT;
-                    if (this.y === 0) {
-                        this.arrSymbol[i].y += this.REEL_HEIGHT;
-                    }
-                }
+                this._doLastMove();
             }
         })
+    }
+
+    _doLastMove() {
+        let _distance = this.parSheet.symbolHeight*this.bounceMultiplier;
+        let spinStopTime = this.spinDuration*_distance/this.distance;
+
+        let nextY = this.y + _distance;
+        let lastY = nextY - _distance;
+
+        let timeline = new TimelineMax();
+        // Last elastic Move
+        timeline.to(this, spinStopTime, {paused:false, y:nextY, ease:Bounce.easeOut})
+            .to(this, this.bounceDuration, {paused:false, y:lastY, ease:Bounce.easeOut})
+            .eventCallback("onComplete", () => {
+                let moved = this.y;
+                this.y = 0;
+                let len = this.arrSymbol.length;
+                for (let i = 0; i < len; i++) {
+                    this.arrSymbol[i].y += moved;
+                }
+
+            }, []);
     }
 
     setTint( tint ) {
@@ -327,38 +332,22 @@ class Main {
     }
 
     init() {
-        this._getParSheet();
-
-        this.slot = new CJackpotMiniSlot( this._getParSheet() );
+        this.slot = new CJackpotMiniSlot();
         this.stage.addChild( this.slot );
 
-        this.slot.x = 50;
+        this.slot.x = 200;
         this.slot.y = 300;
     }
 
-    _getParSheet() {
-        let empty = 0;
-        let real7 = 1;
-        let blue7 = 2;
-        let white7 = 3;
+    play( spinDuration, stopIndex, spinCount, bounceDuration, bounceMultiplier ) {
 
-        return {
-            reelSpaceX  : 39,
-            symbolHeight: 30,
-            symbolWidth : 36,
-            reelCount: 5,
-            EmptySymbolID: 0,
-            JackpotSymbolID: 1,
-            reel0 : [ real7, empty, blue7, empty, real7, empty, white7, empty, real7, empty ],
-            reel1 : [ real7, empty, real7, empty, blue7, empty, white7, empty, real7, empty ],
-            reel2 : [ real7, empty, blue7, empty, white7, empty, white7, empty, real7, empty ],
-            reel3 : [ empty, blue7, empty, real7, empty, white7, empty, real7, empty, real7 ],
-            reel4 : [ blue7, empty, real7, empty, white7, empty, white7, empty, real7, empty ]
-        }
-    }
+        this.spinDuration = spinDuration || 0.4;
+        this.stopDuration = stopIndex || 0.02;
+        this.spinCount = spinCount || 1;
+        this.bounceDuration = bounceDuration || 0.05;
+        this.bounceMultipiler = bounceMultiplier || 0.2;
 
-    play( isJackpot, isMega, spinDuration, stopDuration ) {
-        this.slot.playReel( isJackpot, isMega, spinDuration, stopDuration );
+        this.slot.playReel( Math.random() < 0.5 , Math.random() < 0.5, this.spinDuration, this.stopDuration, this.spinCount, this.bounceDuration, this.bounceMultipiler  );
     }
 }
 
