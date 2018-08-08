@@ -19,6 +19,14 @@ class CJackpotMiniSlot extends PIXI.Container {
         this.init();
     }
 
+    destroy() {
+        this.reels.forEach( miniReel => {
+            miniReel.off( 'reelStop', this.onReelSpinFinished, this );
+        } );
+
+        super.destroy();
+    }
+
     init() {
         this.initBack();
         this.initMask();
@@ -53,7 +61,7 @@ class CJackpotMiniSlot extends PIXI.Container {
             let miniReel = new MiniReel( i, this.parSheet );
             miniReel.x = this.parSheet.reelSpaceX * i;
             this.reelContainer.addChild( miniReel );
-
+            miniReel.on( 'reelStop', this.onReelSpinFinished, this );
             this.reels.push( miniReel );
         }
     }
@@ -93,6 +101,12 @@ class CJackpotMiniSlot extends PIXI.Container {
 
         for( let i = 0; i< this.reels.length; i++ ) {
             this.reels[ i ]._playReel( spinDuration + i * stopDuration, arrResult[ i ], spinCount, bounceDuration, bounceMultiplier );
+        }
+    }
+
+    onReelSpinFinished( reelIndex ) {
+        if( reelIndex === 4 ) {
+            console.warn( "reelFinish");
         }
     }
 
@@ -292,7 +306,13 @@ class MiniReel extends PIXI.Sprite {
                     this.arrSymbol[i].y += moved;
                 }
 
+                this.notifyReelStop();
+
             }, []);
+    }
+
+    notifyReelStop() {
+        this.emit( 'reelStop', this._reelIndex );
     }
 
     setTint( tint ) {
@@ -312,6 +332,12 @@ class Main {
             backgroundColor: 0xcccccc
         });
         document.body.appendChild(this.app.view);
+
+        // this.app.renderer.view.style.position = "absolute";
+        // this.app.renderer.view.style.display = "block";
+        // this.app.renderer.view.style.top = "0px";
+        // this.app.renderer.view.style.left = "0px";
+        // this.app.renderer.autoResize = true;
 
         this.stage = this.app.stage;
 
@@ -336,7 +362,7 @@ class Main {
         this.stage.addChild( this.slot );
 
         this.slot.x = 200;
-        this.slot.y = 300;
+        this.slot.y = 40;
     }
 
     play( spinDuration, stopIndex, spinCount, bounceDuration, bounceMultiplier ) {
