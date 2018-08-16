@@ -1,102 +1,69 @@
-var app = new PIXI.Application(800, 600, {
-    backgroundColor: 0xcccccc
-});
-document.body.appendChild(app.view);
+class LoaderTest {
+    constructor() {
+        this.app = new PIXI.Application(800, 600, {
+            backgroundColor: 0xcccccc
+        });
+        document.body.appendChild(this.app.view);
 
-window.app = app;
+        this.stage = this.app.stage;
 
-let loadingStart = function() {
+        this.init();
+    }
 
-    window.bb= this;
+    init() {
+        this._initText();
+        this._loadImgResource();
+    }
 
-    let spr = PIXI.Sprite.fromImage( "loading" );
-    spr.scale.x = 0.5;
-    spr.scale.y = 0.5;
+    _initText() {
+        this.basicText = new PIXI.Text('Basic text in pixi');
+        this.basicText.anchor.x = 0.5;
+        this.basicText.anchor.y = 0.5;
+        this.basicText.x = 400;
+        this.basicText.y = 500;
+        this.basicText.style.color ="0xffffff";
 
-    spr.anchor.x = 0.5;
-    spr.anchor.y = 0.5;
+        this.app.stage.addChild( this.basicText );
+    }
 
-    spr.x = app.renderer.width / 2;
-    spr.y = app.renderer.height / 2;
-    app.stage.addChild( spr );
+    _loadImgResource() {
 
+        // let loader = PIXI.loader;
 
-    var basicText = new PIXI.Text('Basic text in pixi');
-    basicText.anchor.x = 0.5;
-    basicText.anchor.y = 0.5;
+        let arrFile = [
+            '1111.png',
+            '2222.png',
+            '3333.png',
+            '4444.png',
+            'BGrotate.jpg',
+            'bkg-grass.jpg',
+            'btn_close_up.png'
+        ];
 
-    basicText.x = 400;
-    basicText.y = 500;
-    basicText.style.color ="0xffffff";
+        console.warn( arrFile.toString() );
 
-    app.stage.addChild(basicText);
+        arrFile = arrFile.map( item => {
+            return _ASSET_PATH_ + item;
+        })
 
-
-    let loader = new PIXI.loaders.Loader();
-    loader.add( _ASSET_PATH_ + "22.mov");
-
-    loader.onProgress.add( ( ss, resource ) => {
-        console.warn("asad");
-        basicText.text = ss.progress + " % ...";
-    });
-
-    // loader.load( () => {
-    //     console.warn("download complete");
-    // });
-
-
-
-};
-
-(function(){
-
-    let loader = PIXI.loader;
-
-    loader.add( "loading", _ASSET_PATH_ + "loading_logo.png" );
-
-    loader.load( () => {
-        loadingStart();
-    })
+        console.warn( arrFile.toString() );
 
 
 
-}).bind(window)();
+        let loader = new PIXI.loaders.Loader();
+        loader.add( arrFile );
 
+        loader.onProgress.add( ( ss, resource ) => {
+            console.warn(ss.progress);
+            this.basicText.text = ss.progress + " % ...";
+        });
 
-// 안전 버전
-// setInterval( () => {
-//     let loader = PIXI.loader;
-//     if( loader.resources.hasOwnProperty( "1" ) === false ) {
-//         loader.add( "1", _ASSET_PATH_+ "/font/jackpotwheel_count.fnt");
-//     }
-//
-//     if( loader.resources.hasOwnProperty( "2" ) === false ) {
-//         loader.add( "2", _ASSET_PATH_+ "/font/jackpotwheel_result.fnt");
-//     }
-//
-//     if( loader.resources.hasOwnProperty( "3" ) === false ) {
-//         loader.add( "3", _ASSET_PATH_+ "/font/slot_jackpot_popup_amount.fnt");
-//     }
-//
-//     loader.load( () => {
-//         // loader.destroy();
-//
-//         console.warn("load complete");
-//     });
-// }, 200 );
+        loader.load( ()=> {
+            console.warn("load complete");
+        });
+    }
+}
 
-// setInterval( () => {
-//     let loader = new PIXI.loaders.Loader();
-//     loader.add("1", _ASSET_PATH_ + "/font/jackpotwheel_count.fnt");
-//     loader.add("2", _ASSET_PATH_ + "/font/jackpotwheel_result.fnt");
-//     loader.add("3", _ASSET_PATH_ + "/font/slot_jackpot_popup_amount.fnt");
-//
-//     loader.load(() => {
-//         loader.reset();
-//
-//         console.warn("load complete");
-//     });
-// }, 200);
-
+window.aaa = new LoaderTest();
 
 
