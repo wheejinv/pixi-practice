@@ -12,6 +12,9 @@ PIXI.loader.add( _ASSET_PATH_+ "/font/jackpotwheel_count.fnt");
 PIXI.loader.add( _ASSET_PATH_+ "/font/jackpotwheel_result.fnt");
 PIXI.loader.add( _ASSET_PATH_+ "/font/slot_jackpot_popup_amount.fnt");
 PIXI.loader.add( _ASSET_PATH_+ "/font/welcomeback_count.fnt");
+PIXI.loader.add( _ASSET_PATH_+ "/font/balance_num_test.fnt");
+PIXI.loader.add( _ASSET_PATH_+ "/font/balance_num.fnt");
+PIXI.loader.add( _ASSET_PATH_+ "/font/balance_num_hlr.fnt");
 
 PIXI.loader.load(setup);
 
@@ -22,12 +25,19 @@ function setup() {
     let bmFontJackpotFontName = 'jackpotwheel_count';
     let bmJackpotPopupFontName = 'slot_jackpot_popup_amount';
     let welcomebackFontName = 'welcomeback_count';
+    let balanceFontNameTest = 'balance_num_test';
+    let balanceFontName = 'balance_num';
+    let balanceFontHlrName = 'balance_num_hlr';
 
     let _size = 30;
 
     let bmFontResult = new PIXI.extras.BitmapText("", { font: _size + "px " + bmFontResultFontName, tint: _color, align: 'center' });
     let bmFontJackpot = new PIXI.extras.BitmapText("", { font: _size + "px " + bmFontJackpotFontName, tint: _color, align: 'center' });
     let bmJackpotPopupFont = new PIXI.extras.BitmapText("", { font: 125 + "px " + bmJackpotPopupFontName, tint: _color, align: 'center' });
+    let balanceBMFontTest = new PIXI.extras.BitmapText("", { font: 36 + "px " + balanceFontNameTest, tint: _color, align: 'center' });
+    let balanceBMFont = new PIXI.extras.BitmapText("", { font: 36 + "px " + balanceFontName, tint: _color, align: 'center' });
+    let balanceBMFontHlr = new PIXI.extras.BitmapText("", { font: 32 + "px " + balanceFontHlrName, tint: _color, align: 'center' });
+
 
     let welcomebackFont = new PIXI.extras.BitmapText("100,100", { font: 125 + "px " + welcomebackFontName, tint: _color, align: 'center' });
     stage.addChild( welcomebackFont );
@@ -39,7 +49,25 @@ function setup() {
     bmFontResult.y = 100;
     bmFontResult.text = "$16,200,000,000";
 
-    window.ss = bmFontResult;
+    window.ss = balanceBMFontTest;
+    stage.addChild( balanceBMFontTest );
+    balanceBMFontTest.x = 100;
+    balanceBMFontTest.y = 250;
+
+    let _balanceText = "208,123,456,789";
+
+    balanceBMFontTest.text = _balanceText;
+
+    // window.ss = balanceBMFontTest;
+    stage.addChild( balanceBMFont );
+    balanceBMFont.x = 100;
+    balanceBMFont.y = 220;
+    balanceBMFont.text = _balanceText;
+
+    stage.addChild( balanceBMFontHlr );
+    balanceBMFontHlr.x = 100;
+    balanceBMFontHlr.y = 190;
+    balanceBMFontHlr.text = _balanceText;
 
     bmFontJackpot.x = 100;
     bmFontJackpot.y = 0;
