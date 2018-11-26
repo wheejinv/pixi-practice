@@ -15,6 +15,7 @@ PIXI.loader.add( _ASSET_PATH_+ "/font/welcomeback_count.fnt");
 PIXI.loader.add( _ASSET_PATH_+ "/font/balance_num_test.fnt");
 PIXI.loader.add( _ASSET_PATH_+ "/font/balance_num.fnt");
 PIXI.loader.add( _ASSET_PATH_+ "/font/balance_num_hlr.fnt");
+PIXI.loader.add( _ASSET_PATH_+ "/font/firstpurchase_count.fnt");
 
 PIXI.loader.load(setup);
 
@@ -28,6 +29,7 @@ function setup() {
     let balanceFontNameTest = 'balance_num_test';
     let balanceFontName = 'balance_num';
     let balanceFontHlrName = 'balance_num_hlr';
+    let firstPurchaseFontName = 'firstpurchase_count';
 
     let _size = 30;
 
@@ -37,6 +39,7 @@ function setup() {
     let balanceBMFontTest = new PIXI.extras.BitmapText("", { font: 36 + "px " + balanceFontNameTest, tint: _color, align: 'center' });
     let balanceBMFont = new PIXI.extras.BitmapText("", { font: 36 + "px " + balanceFontName, tint: _color, align: 'center' });
     let balanceBMFontHlr = new PIXI.extras.BitmapText("", { font: 32 + "px " + balanceFontHlrName, tint: _color, align: 'center' });
+    let firstPurchaseBmFont = new PIXI.extras.BitmapText("", { font: 32 + "px " + firstPurchaseFontName, tint: _color, align: 'center' });
 
 
     let welcomebackFont = new PIXI.extras.BitmapText("100,100", { font: 125 + "px " + welcomebackFontName, tint: _color, align: 'center' });
@@ -80,6 +83,12 @@ function setup() {
     stage.addChild( bmFontResult );
     stage.addChild( bmFontJackpot );
     stage.addChild( bmJackpotPopupFont );
+
+	stage.addChild( firstPurchaseBmFont );
+	window.aaa = firstPurchaseBmFont;
+	firstPurchaseBmFont.x = 100;
+	firstPurchaseBmFont.y = 100;
+	firstPurchaseBmFont.text = "208,123,456,789";
 
     let getBMFontInfo = function( bmFont ) {
 
