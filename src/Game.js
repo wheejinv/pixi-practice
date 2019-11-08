@@ -19,6 +19,8 @@ class Game {
             lineWidth: 99
         } );
 
+        // test
+
         let getMeasure = function( obj ) {
             return PIXI.TextMetrics.measureText(obj._text, obj._style, obj._style.wordWrap, obj.canvas);
         };
