@@ -89,6 +89,7 @@ class Game {
         //
         // this.scroll = new Scrolling( this.innerLayer, this.mask );
         // this.scroll.start( this.eventHandler );
+        // test
 
     }
 
