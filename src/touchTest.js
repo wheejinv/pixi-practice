@@ -12,6 +12,6 @@ rect.beginFill(0xFFFFFF)
 app.stage.addChild(rect);
 
 rect.interactive = true;
-rect.on('mousedown', ()=>{
+rect.on('pointerdown', ()=>{
 	console.warn("click");
 });

@@ -34,7 +34,7 @@
         var num = 0;
         window.bb = document.getElementById("testGround");
         window.aa = document.getElementById("parent");
-        aa.addEventListener("pointerup", (e)=>{
+        aa.addEventListener("pointerdown", (e)=>{
         	window.bb.innerHTML = "asd" + num++;
         	console.warn("parent click");
         	e.stopPropagation();
