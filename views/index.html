@@ -3,20 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <title>~~ PIXI Practice ~~</title>
+    <style>
+        #testGround {
+            background-color: aqua;
+            position:fixed;
+             top:30px;
+            left:40px;
+        }
+    </style>
 
     <script>
         const _ASSET_PATH_ = "/assets/";
 
     </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.7.3/pixi.js"></script>
+    <script src="/assets/lib/pixi_4.7.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/TweenMax.min.js"></script>
     <script src="/assets/lib/CustomEase.js"></script>
     <script src="/assets/lib/PixiPlugin.js"></script>
 
 </head>
 <body>
-    <script type="module" src="/src/bmFontTest.js"></script>
+<div id="parent">
+    <div id="testGround">
+        ss
+    </div>
+</div>
+
+    <script>
+        var num = 0;
+        window.bb = document.getElementById("testGround");
+        window.aa = document.getElementById("parent");
+        aa.addEventListener("pointerup", (e)=>{
+        	window.bb.innerHTML = "asd" + num++;
+        	console.warn("parent click");
+        	e.stopPropagation();
+        }, true);
+    </script>
+<!--    <script type="module" src="/src/bmFontTest.js"></script>-->
+    <script type="module" src="/src/touchTest.js"></script>
     <!--<script src="/src/commonPopupTest.js"></script>-->
     <!--<script type="module" src="/src/ease/wheelEase1.js"></script>-->
     <!--<script type="module" src="/src/ease/timelineTest.js"></script>-->
