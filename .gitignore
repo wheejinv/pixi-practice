@@ -1,6 +1,6 @@
 # Dependency directories
 node_modules/
-.idea/
+.idea
 misc.xml
 modules.xml
 vcs.xml

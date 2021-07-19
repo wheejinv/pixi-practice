@@ -1,3 +1,3 @@
-import Game from './velocityTest.js'
+import Game from './pinWheel/index.js'
 
 window.game = new Game();
